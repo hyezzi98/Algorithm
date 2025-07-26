@@ -2,101 +2,102 @@
 #include <vector>
 #include <queue>
 #include <set>
-
-#define MAX 5
+#define SIZE 5
+#define DIRECTION 4
 using namespace std;
-vector<pair<int,int>> combiArray;
-bool isConnected(const vector<pair<int,int>>& combi, char array[][MAX]);
+
+void printArray(char array[][SIZE]);
+void combination(int depth, int start);
+bool isConnected(const vector<pair<int,int>>& pos);
+
+vector<pair<int, int>> pos;
+char array[SIZE][SIZE];
+
+// 상하좌우
+int dy[DIRECTION] = {-1,1,0,0};
+int dx[DIRECTION] = {0,0,-1,1};
 int result = 0;
 
-void printArray(char array[][MAX]);
-void combination(int depth, int start);
-char array[MAX][MAX];
-
 int main() {
-    for (int i = 0; i < MAX; i++) {
-        for (int j = 0; j < MAX; j++) {
+    
+    // 입력받기
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
             cin >> array[i][j];
         }
     }
     // printArray(array);
-    combination(0,0);
+    // 조합 만들기
+    combination(0, 0);
     cout << result;
-    return 0;
+    
+}
+
+bool isConnected(const vector<pair<int,int>> &pos) {
+    set<pair<int,int>> posSet(pos.begin(), pos.end());
+    bool visited[SIZE][SIZE] = {false};
+    int sCount = 0;
+    int check = 1;
+
+    // 첫 요소 값이 S인지 확인
+    if (array[pos[0].first][pos[0].second] == 'S') {
+        sCount += 1;
+    }
+    
+    // 가로, 세로 연결인지 확인
+    queue<pair<int,int>> q;
+    visited[pos[0].first][pos[0].second] = true;
+    q.push(pos[0]);
+
+    while(!q.empty()) {
+        pair<int,int> cur = q.front();
+        q.pop();
+        int y = cur.first;
+        int x = cur.second;
+        
+        for (int i = 0; i < 4; i++) {
+            int ny = y + dy[i];
+            int nx = x + dx[i];
+            // 범위 내에 있는지 체크
+            if (0 > ny || 0 > nx || SIZE <= ny || SIZE <= nx)  continue;
+            // 연결된 수 갱신 후 조합에 있는 좌표인지 확인
+            if (!visited[ny][nx] && posSet.count({ny, nx}) > 0) {
+                check += 1;
+                q.push({ny, nx});
+                visited[ny][nx] = true;
+                // S인지 확인
+                if (array[ny][nx] == 'S') sCount++;   
+            }
+            
+        }
+    }
+    if (sCount >= 4 && check == 7) return true;
+    else return false;
 }
 
 void combination(int depth, int start) {
     // basis part
     if (depth == 7) {
-        if (isConnected(combiArray, array)) {
-            result++;
+        if (isConnected(pos)) {
+            result += 1;
         }
         return;
     }
 
     // inductive part
     for (int i = start; i < 25; i++) {
-        int y = i / 5;
-        int x = i % 5;
-
-        combiArray.push_back({y, x});
+        int y = i / SIZE;
+        int x = i % SIZE;
+        pos.push_back({y, x});
         combination(depth + 1, i + 1);
-        combiArray.pop_back();
-        
+        pos.pop_back();
     }
 }
 
-// 가로 세로 연결됐는지
-bool isConnected (const vector<pair<int,int>> &combi, char array[][MAX]) {
-    set<pair<int, int>> combiSet(combi.begin(), combi.end());
-    bool visited[MAX][MAX] = {false};
-
-    queue<pair<int, int>> q;
-    q.push(combi[0]);
-    visited[combi[0].first][combi[0].second] = true;
-    
-    int cnt = 1;
-    int sCount = 0;
-
-    if (array[combi[0].first][combi[0].second] == 'S') {
-        sCount++;
-    }
-    
-
-    int dy[4] = {-1,1,0,0};
-    int dx[4] = {0,0,-1,1};
-
-    while (!q.empty()) {
-        pair<int, int> cur = q.front();
-        q.pop();
-
-        int y = cur.first;
-        int x = cur.second;
-
-        for (int d = 0; d < 4; d++) {
-            int ny = y + dy[d];
-            int nx = x + dx[d];
-
-            // 방문 조건 벗어나는지 확인
-            if (ny < 0 || ny >= MAX || nx < 0 || nx >= MAX) continue;
-            // 올바른 조건 카운트
-            if (!visited[ny][nx] && combiSet.count({ny, nx}) > 0) {
-                visited[ny][nx]= true;
-                q.push({ny, nx});
-                cnt += 1;
-
-                if (array[ny][nx] == 'S') sCount++;
-            }
-            
-        }
-    }
-    return (cnt == 7 && sCount >= 4);
-}
-
-void printArray(char array[][MAX]) {
-    for (int i = 0; i < MAX; i ++) {
-        for (int j = 0; j < MAX; j++) {
-            cout << array[i][j] << "";
+void printArray(char array[][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            cout << array[i][j];
         }
         cout << "\n";
     }
