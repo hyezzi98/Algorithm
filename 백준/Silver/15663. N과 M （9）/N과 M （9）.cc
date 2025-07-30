@@ -17,7 +17,7 @@ int main() {
     for (int i = 0 ; i < n; i++) {
         cin >> array[i];
     }
-    sort(array, array + n);
+    // sort(array, array + n);
     recursive(0, array, visited);
     for (const auto &all : allResult) {
         for (int num : all) {
