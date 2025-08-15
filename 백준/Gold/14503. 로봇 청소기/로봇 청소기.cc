@@ -30,35 +30,23 @@ void robotCleaner(int y, int x, int d) {
     }
 
     // 청소하지 않은 빈칸이 있는 경우
-    // if (flag == 1) {
-    //     // 1. 반시계 방향으로 회전
-    //     d = (d + 3) % 4;
-    //     // 2. 앞쪽 칸 청소되지 않았는지 확인
-    //     int frontY = y + dy[d];
-    //     int frontX = x + dx[d];
-    //     if (0 <= frontY && 0 <= frontX && frontY < n && frontX < m) {
-    //         // 청소되지 않은 경우 전진
-    //         if (arr[frontY][frontX] == 0) {
-    //             robotCleaner(frontY, frontX, d);   
-    //         }
-    //         // 청소된 칸인 경우 유지
-    //         else if (arr[frontY][frontX] == 2) {
-    //             robotCleaner(y, x, d);
-    //         }
-    //     }
-    // }
     if (flag == 1) {
-    for (int i = 0; i < 4; i++) {
-        d = (d + 3) % 4; // 반시계 회전
+        // 1. 반시계 방향으로 회전
+        d = (d + 3) % 4;
+        // 2. 앞쪽 칸 청소되지 않았는지 확인
         int frontY = y + dy[d];
         int frontX = x + dx[d];
-        if (0 <= frontY && 0 <= frontX && frontY < n && frontX < m && arr[frontY][frontX] == 0) {
-            robotCleaner(frontY, frontX, d);
-            return; // 이동했으면 바로 종료 (재귀에서 계속 탐색)
+        if (0 <= frontY && 0 <= frontX && frontY < n && frontX < m) {
+            // 청소되지 않은 경우 전진
+            if (arr[frontY][frontX] == 0) {
+                robotCleaner(frontY, frontX, d);   
+            }
+            // 청소된 칸인 경우 유지
+            else if (arr[frontY][frontX] == 2 || arr[frontY][frontX] == 1) {
+                robotCleaner(y, x, d);
             }
         }
     }
-
 
     // 빈 칸이 없는 경우
     // 한칸 후진하고 1번으로 돌아가기
